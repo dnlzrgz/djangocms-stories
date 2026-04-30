@@ -1,5 +1,5 @@
 from datetime import timedelta
-from django.utils.timezone import now
+
 import pytest
 from django.apps import apps
 from django.test import RequestFactory
@@ -120,8 +120,8 @@ def test_post_list_view_filters_by_publication_date_end(client, admin_user, defa
     expired_post = PostContentFactory(
         title="Expired Post",
         post__app_config=default_config,
-        post__date_published=current_time - timedelta(days=10),
-        post__date_published_end=current_time - timedelta(days=1),
+        post__date_published=current_time - timedelta(days=20),
+        post__date_published_end=current_time - timedelta(days=10),
     )
 
     future_post = PostContentFactory(
