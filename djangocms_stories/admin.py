@@ -20,9 +20,8 @@ from django.db import models
 from django.db.models import signals
 from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
-from django.urls import path
-from django.utils.translation import gettext_lazy as _
-from django.utils.translation import ngettext as __
+from django.urls import Resolver404, path, resolve
+from django.utils.translation import gettext_lazy as _, ngettext as __
 from django.views.generic import RedirectView
 from parler.admin import TranslatableAdmin
 
@@ -462,7 +461,7 @@ class PostAdmin(
         """Returns True if user can change content_obj"""
         if hasattr(super(), "can_change_content"):
             return super().can_change_content(request, content_obj)
-        
+
         if content_obj and is_versioning_enabled():
             version = content_obj.versions.first()
             return version and version.check_modify.as_bool(request.user)
@@ -659,9 +658,7 @@ class PostAdmin(
 
         prefetch_lookups = getattr(qs, "_prefetch_related_lookups", ())
         already_prefetched = any(
-            isinstance(p, models.Prefetch)
-            and p.lookup == "postcontent_set"
-            and p.to_attr == "_admin_prefetch_cache"
+            isinstance(p, models.Prefetch) and p.lookup == "postcontent_set" and p.to_attr == "_admin_prefetch_cache"
             for p in prefetch_lookups
         )
         if not already_prefetched:
